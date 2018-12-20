@@ -70,7 +70,8 @@ const struct_field* struct_types[] =
 {
 	test1_data_fields,
 	test2_data_fields,
-};```
+};
+```
 
 ## Step3. write gummo_json.h
 ```
