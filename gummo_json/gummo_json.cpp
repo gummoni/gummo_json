@@ -1,3 +1,22 @@
+/*
+The MIT License (MIT)
+Copyright (c) 2018 Koichi Nishino
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
 #include "pch.h"
 #include "gummo_json.h"
 
@@ -11,6 +30,8 @@ static const struct_field* struct_get_field(const struct_field* fields, char* na
 		if (NULL == strcmp(field->name, name)) return field;
 	}
 }
+
+static char CharToHex(char ch) { return ('0' <= ch && '9') ? (ch - '0') : ('a' <= ch && 'f' <= ch) ? (ch - 'a' + 10) : ('A' <= ch && ch <= 'F') ? (ch - 'A' + 10) : 0xff; }
 
 static void struct_set_value(char* pval, TYPE_ID type, char* data)
 {
@@ -55,7 +76,7 @@ static bool json_capture_numeric(json_parse_context* context)
 
 static bool json_capture_string(json_parse_context* context, char* dst)
 {
-	for (char ch = *(++context->msg); '\0' != ch; ch = *(++context->msg), dst++)
+	for (char ch = *(++context->msg); '\0' != ch; ch = *(++context->msg))
 	{
 		switch (ch)
 		{
@@ -67,30 +88,29 @@ static bool json_capture_string(json_parse_context* context, char* dst)
 			else if (ch == 't') *dst = '\t';
 			else if (ch == 'x')
 			{	//hex: 1byte
-				char tmp0 = CharToHex(*(context->msg++));
-				char tmp1 = CharToHex(*(context->msg++));				
-				*dst = (tmp0 << 4) | tmp1;
+				char c0 = CharToHex(*(++context->msg));
+				char c1 = CharToHex(*(++context->msg));				
+				*(dst++) = (c0 << 4) | c1;
 			}
 			else if (ch == 'u')
 			{	//multibyte: 2byte
-				char tmp0 = CharToHex(*(context->msg++));
-				char tmp1 = CharToHex(*(context->msg++));
-				char tmp2 = CharToHex(*(context->msg++));
-				char tmp3 = CharToHex(*(context->msg++));
-				*dst = (tmp0 << 4) | tmp1;
-				dst++;
-				*dst = (tmp2 << 4) | tmp3;
+				char c0 = CharToHex(*(++context->msg));
+				char c1 = CharToHex(*(++context->msg));
+				char c2 = CharToHex(*(++context->msg));
+				char c3 = CharToHex(*(++context->msg));
+				*(dst++) = (c0 << 4) | c1;
+				*(dst++) = (c2 << 4) | c3;
 			}
-			else *dst = ch;
+			else *(dst++) = ch;
 			break;
 
 		case '"':
-			*dst = '\0';
+			*(dst++) = '\0';
 			context->msg++;
 			return true;
 
 		default:
-			*dst = ch;
+			*(dst++) = ch;
 			break;
 		}
 	}
@@ -139,9 +159,9 @@ static bool json_capture_value(json_parse_context* context)
 	if ('"' == ch) { return json_capture_string(context, context->pval); }
 	if ('{' == ch) { *context->msg++; json_skip_space(context); return json_capture_object(context); }
 	if ('[' == ch) { *context->msg++; json_skip_space(context); return json_capture_array(context); }
-	if ('t' == ch) { context->msg += 4; return true; }
-	if ('f' == ch) { context->msg += 5; return true; }
-	if ('n' == ch) { context->msg += 4; return true; }
+	if ('t' == ch) { context->msg += 4; struct_set_value(context->pval, context->pfield->type, (char*)"1"); return true; }
+	if ('f' == ch) { context->msg += 5; struct_set_value(context->pval, context->pfield->type, (char*)"0"); return true; }
+	if ('n' == ch) { context->msg += 4; memset(context->pval, 0, FIELD_TYPE_SIZE(context->pfield)); return true; }
 	return json_capture_numeric(context);
 }
 
@@ -175,55 +195,54 @@ char* json_deserialize(void* obj, const struct_field* fields, char* json_str)
 	}
 }
 //-------------------------Deserialize-------------------------
-static int json_to_string_value(char* pval, const struct_field* field, char* msg)
+static int json_to_string_value(char* pval, const struct_field* field, char* msg, int size)
 {
 	TYPE_ID type = field->type;
-	if (type == TYPE_ID_BYTE) return sprintf_s(msg, field->size, "%d", *(unsigned char*)pval);
-	if (type == TYPE_ID_SHORT) return sprintf_s(msg, field->size, "%d", *(unsigned short*)pval);
-	if (type == TYPE_ID_INT) return sprintf_s(msg, field->size, "%d", *(unsigned int*)pval);
-	if (type == TYPE_ID_LONG) return sprintf_s(msg, field->size, "%ld", *(unsigned long*)pval);
-	if (type == TYPE_ID_FLOAT) return sprintf_s(msg, field->size, "%f", *(float*)pval);
-	if (type == TYPE_ID_DOUBLE) return sprintf_s(msg, field->size, "%lf", *(double*)pval);
-	if (type == TYPE_ID_STRING) return sprintf_s(msg, field->size, "\"%s\"", pval);
-	return json_serialize(pval, TYPE_GET_FIELDS(type), msg);
+	if (type == TYPE_ID_BYTE) return sprintf_s(msg, size, "%d", *(unsigned char*)pval);
+	if (type == TYPE_ID_SHORT) return sprintf_s(msg, size, "%d", *(unsigned short*)pval);
+	if (type == TYPE_ID_INT) return sprintf_s(msg, size, "%d", *(unsigned int*)pval);
+	if (type == TYPE_ID_LONG) return sprintf_s(msg, size, "%ld", *(unsigned long*)pval);
+	if (type == TYPE_ID_FLOAT) return sprintf_s(msg, size, "%f", *(float*)pval);
+	if (type == TYPE_ID_DOUBLE) return sprintf_s(msg, size, "%lf", *(double*)pval);
+	if (type == TYPE_ID_STRING) return sprintf_s(msg, size, "\"%s\"", pval);
+	return json_serialize(pval, TYPE_GET_FIELDS(type), msg, size);
 }
 
-int json_serialize(void* obj, const struct_field* fields, char* json_str)
+int json_serialize(void* obj, const struct_field* fields, char* json_str, int size)
 {
-	int idx = sprintf_s(json_str, 256, "{");
+	int idx = sprintf_s(json_str, size, "{");
 	for (;;)
 	{
 		int length = fields->length;
 		TYPE_ID type = fields->type;
 		char* pobj = &((char*)obj)[fields->offset];
 		//key
-		idx += sprintf_s(&json_str[idx], 256, "\"%s\":", fields->name);
+		idx += sprintf_s(&json_str[idx], size - idx, "\"%s\":", fields->name);
 		//value
 		if ((1 < length) && (TYPE_ID_STRING != type))
 		{	//array
-			int length = fields->length;
 			int array_size = fields->size / length;
-			idx += sprintf_s(&json_str[idx], 16, "[");
+			idx += sprintf_s(&json_str[idx], size - idx, "[");
 			int i = 0;
 			for (;;)
 			{
-				idx += json_to_string_value(pobj, fields, &json_str[idx]);
+				idx += json_to_string_value(pobj, fields, &json_str[idx], size - idx);
 				//next
 				pobj += array_size;
 				if (++i == length) break;
-				idx += sprintf_s(&json_str[idx], 16, ",");
+				idx += sprintf_s(&json_str[idx], size - idx, ",");
 			}
-			idx += sprintf_s(&json_str[idx], 16, "]");
+			idx += sprintf_s(&json_str[idx], size - idx, "]");
 		}
 		else
 		{	//object
-			idx += json_to_string_value(pobj, fields, &json_str[idx]);
+			idx += json_to_string_value(pobj, fields, &json_str[idx], size - idx);
 		}
 		//next
 		if (NULL == *(++fields)->name) break;
-		idx += sprintf_s(&json_str[idx], 256, ",");
+		idx += sprintf_s(&json_str[idx], size - idx, ",");
 	}
-	idx += sprintf_s(&json_str[idx], 256, "}");
+	idx += sprintf_s(&json_str[idx], size - idx, "}");
 	json_str[idx] = '\0';
 	return idx;
 }
