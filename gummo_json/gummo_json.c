@@ -17,8 +17,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-#include "pch.h"
+#include "stdio.h"
+#include "stdlib.h"
+#include "string.h"
+#include "stdbool.h"
 #include "gummo_json.h"
+
 
 static bool json_capture_value(json_parse_context* context);
 
@@ -27,7 +31,7 @@ static const struct_field* struct_get_field(const struct_field* fields, char* na
 	for (const struct_field* field = fields ; ; field++)
 	{
 		if (NULL == field) return NULL;
-		if (NULL == strcmp(field->name, name)) return field;
+		if (!strcmp(field->name, name)) return field;
 	}
 }
 
@@ -35,10 +39,10 @@ static char CharToHex(char ch) { return ('0' <= ch && '9') ? (ch - '0') : ('a' <
 
 static void struct_set_value(char* pval, TYPE_ID type, char* data)
 {
-	if (type == TYPE_ID_BYTE) *((unsigned char*)pval) = (unsigned char)strtol(data, NULL, NULL);
-	else if (type == TYPE_ID_SHORT) *((unsigned short*)pval) = (unsigned short)strtol(data, NULL, NULL);
-	else if (type == TYPE_ID_INT) *((unsigned int*)pval) = (unsigned int)strtol(data, NULL, NULL);
-	else if (type == TYPE_ID_LONG) *((unsigned long*)pval) = (unsigned long)strtol(data, NULL, NULL);
+	if (type == TYPE_ID_BYTE) *((unsigned char*)pval) = (unsigned char)strtol(data, NULL, 0);
+	else if (type == TYPE_ID_SHORT) *((unsigned short*)pval) = (unsigned short)strtol(data, NULL, 0);
+	else if (type == TYPE_ID_INT) *((unsigned int*)pval) = (unsigned int)strtol(data, NULL, 0);
+	else if (type == TYPE_ID_LONG) *((unsigned long*)pval) = (unsigned long)strtol(data, NULL, 0);
 	else if (type == TYPE_ID_FLOAT) *((float*)pval) = (float)strtof(data, NULL);
 	else if (type == TYPE_ID_DOUBLE) *((double*)pval) = (double)strtod(data, NULL);
 	else if (type == TYPE_ID_STRING) memcpy(pval, data, strlen(data) + 1);
@@ -56,7 +60,7 @@ static char json_skip_space(json_parse_context* context)
 static char json_get_token(json_parse_context* context)
 {
 	char result;
-	if (!(result = json_skip_space(context))) return NULL;
+	if (!(result = json_skip_space(context))) return '\0';
 	context->msg++;
 	json_skip_space(context);
 	return result;
@@ -119,9 +123,9 @@ static bool json_capture_string(json_parse_context* context, char* dst)
 
 static bool json_capture_object(json_parse_context* context)
 {
-	const struct_field* pfields = TYPE_GET_FIELDS(context->pfield->type);
-	if (0 > pfields->size) return false;
-	context->msg = json_deserialize(context->pval, pfields, context->msg);
+	const struct_type* type = TYPE_GET_INFO(context->pfield->type);
+	if (0 == type) return false;
+	context->msg = json_deserialize(context->pval, type, context->msg);
 	return true;
 }
 
@@ -141,8 +145,7 @@ static bool json_capture_array(json_parse_context* context)
 		}
 		else
 		{	//user type
-			const struct_field* pfields = TYPE_GET_FIELDS(type);
-			context->msg = json_deserialize(context->pval, pfields, context->msg);
+			context->msg = json_deserialize(context->pval, TYPE_GET_INFO(type), context->msg);
 		}
 		if (0 <= array_length) array_length--;
 		char ch = json_get_token(context);
@@ -172,7 +175,7 @@ static bool json_parse_object(json_parse_context* context)
 		// capture key
 		if (!json_capture_string(context, context->tmp)) return false;
 		context->pfield = struct_get_field(context->fields, context->tmp);
-		context->pval = TYPE_GET_FIELD_POINTER(context->obj, context->pfield->offset);
+		context->pval = &context->obj[context->pfield->index];
 		if (':' != json_get_token(context)) return false;
 		// capture value
 		if (!json_capture_value(context)) return false;
@@ -184,9 +187,10 @@ static bool json_parse_object(json_parse_context* context)
 	}
 }
 
-char* json_deserialize(void* obj, const struct_field* fields, char* json_str)
+char* json_deserialize(void* obj, const struct_type* type, char* json_str)
 {
-	json_parse_context context{ (char*)obj, fields, json_str };
+	const struct_field* fields = type->fields;
+	json_parse_context context = { (char*)((unsigned int)obj - type->offset), fields, json_str };
 	switch (json_get_token(&context))
 	{
 	case '{':	return (!json_parse_object(&context)) ? NULL : context.msg;
@@ -194,7 +198,7 @@ char* json_deserialize(void* obj, const struct_field* fields, char* json_str)
 	default:	return NULL;
 	}
 }
-//-------------------------Deserialize-------------------------
+//-------------------------Serialize-------------------------
 static int json_to_string_value(char* pval, const struct_field* field, char* msg, int size)
 {
 	TYPE_ID type = field->type;
@@ -205,17 +209,19 @@ static int json_to_string_value(char* pval, const struct_field* field, char* msg
 	if (type == TYPE_ID_FLOAT) return sprintf_s(msg, size, "%f", *(float*)pval);
 	if (type == TYPE_ID_DOUBLE) return sprintf_s(msg, size, "%lf", *(double*)pval);
 	if (type == TYPE_ID_STRING) return sprintf_s(msg, size, "\"%s\"", pval);
-	return json_serialize(pval, TYPE_GET_FIELDS(type), msg, size);
+	return json_serialize(pval, TYPE_GET_INFO(type), msg, size);
 }
 
-int json_serialize(void* obj, const struct_field* fields, char* json_str, int size)
+int json_serialize(void* obj, const struct_type* type, char* json_str, int size)
 {
+	const struct_field* fields = type->fields;
+	char* _obj = (char*)((unsigned int)obj - type->offset);
 	int idx = sprintf_s(json_str, size, "{");
 	for (;;)
 	{
 		int length = fields->length;
 		TYPE_ID type = fields->type;
-		char* pobj = &((char*)obj)[fields->offset];
+		char* pobj = &_obj[fields->index];
 		//key
 		idx += sprintf_s(&json_str[idx], size - idx, "\"%s\":", fields->name);
 		//value
@@ -239,7 +245,7 @@ int json_serialize(void* obj, const struct_field* fields, char* json_str, int si
 			idx += json_to_string_value(pobj, fields, &json_str[idx], size - idx);
 		}
 		//next
-		if (NULL == *(++fields)->name) break;
+		if (!*(++fields)->name) break;
 		idx += sprintf_s(&json_str[idx], size - idx, ",");
 	}
 	idx += sprintf_s(&json_str[idx], size - idx, "}");

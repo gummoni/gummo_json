@@ -13,30 +13,78 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="ソース ファイル\MQTTSNPacket">
+      <UniqueIdentifier>{36791779-ed35-4a69-b1c2-abba9956a677}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pch.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="gummo_json.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="refrection.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="MQTTSNPacket\MQTTSNConnect.h">
+      <Filter>ソース ファイル\MQTTSNPacket</Filter>
+    </ClInclude>
+    <ClInclude Include="MQTTSNPacket\MQTTSNPacket.h">
+      <Filter>ソース ファイル\MQTTSNPacket</Filter>
+    </ClInclude>
+    <ClInclude Include="MQTTSNPacket\MQTTSNPublish.h">
+      <Filter>ソース ファイル\MQTTSNPacket</Filter>
+    </ClInclude>
+    <ClInclude Include="MQTTSNPacket\MQTTSNSearch.h">
+      <Filter>ソース ファイル\MQTTSNPacket</Filter>
+    </ClInclude>
+    <ClInclude Include="MQTTSNPacket\MQTTSNSubscribe.h">
+      <Filter>ソース ファイル\MQTTSNPacket</Filter>
+    </ClInclude>
+    <ClInclude Include="MQTTSNPacket\MQTTSNUnsubscribe.h">
+      <Filter>ソース ファイル\MQTTSNPacket</Filter>
+    </ClInclude>
+    <ClInclude Include="MQTTSNPacket\StackTrace.h">
+      <Filter>ソース ファイル\MQTTSNPacket</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="pch.cpp">
+    <ClCompile Include="main.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="gummo_json.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="gummo_json.cpp">
+    <ClCompile Include="refrection.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="refrection.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="MQTTSNPacket\MQTTSNConnectClient.c">
+      <Filter>ソース ファイル\MQTTSNPacket</Filter>
+    </ClCompile>
+    <ClCompile Include="MQTTSNPacket\MQTTSNConnectServer.c">
+      <Filter>ソース ファイル\MQTTSNPacket</Filter>
+    </ClCompile>
+    <ClCompile Include="MQTTSNPacket\MQTTSNDeserializePublish.c">
+      <Filter>ソース ファイル\MQTTSNPacket</Filter>
+    </ClCompile>
+    <ClCompile Include="MQTTSNPacket\MQTTSNPacket.c">
+      <Filter>ソース ファイル\MQTTSNPacket</Filter>
+    </ClCompile>
+    <ClCompile Include="MQTTSNPacket\MQTTSNSearchClient.c">
+      <Filter>ソース ファイル\MQTTSNPacket</Filter>
+    </ClCompile>
+    <ClCompile Include="MQTTSNPacket\MQTTSNSearchServer.c">
+      <Filter>ソース ファイル\MQTTSNPacket</Filter>
+    </ClCompile>
+    <ClCompile Include="MQTTSNPacket\MQTTSNSerializePublish.c">
+      <Filter>ソース ファイル\MQTTSNPacket</Filter>
+    </ClCompile>
+    <ClCompile Include="MQTTSNPacket\MQTTSNSubscribeClient.c">
+      <Filter>ソース ファイル\MQTTSNPacket</Filter>
+    </ClCompile>
+    <ClCompile Include="MQTTSNPacket\MQTTSNSubscribeServer.c">
+      <Filter>ソース ファイル\MQTTSNPacket</Filter>
+    </ClCompile>
+    <ClCompile Include="MQTTSNPacket\MQTTSNUnsubscribeClient.c">
+      <Filter>ソース ファイル\MQTTSNPacket</Filter>
+    </ClCompile>
+    <ClCompile Include="MQTTSNPacket\MQTTSNUnsubscribeServer.c">
+      <Filter>ソース ファイル\MQTTSNPacket</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

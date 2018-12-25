@@ -17,8 +17,27 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-// pch.cpp: プリコンパイル済みヘッダーに対応するソース ファイル。コンパイルが正常に実行されるために必要です
+#include "stdio.h"
+#include "gummo_json.h"
 
-#include "pch.h"
+int main()
+{
+	char json_data[512];
+	char msg[] = "{\"a\" : 123 , \"data\" :[{ \"b\": [ 64 , 12 ], \"msg\" : \"foo bar\" },{ \"b\": [ 22 , 99 ], \"msg\" : \"ok\" }],  \"msg\" : \"hello world\"}";	
+	test1_data tmp;
 
-// 一般に、このファイルは無視できますが、プリコンパイル済みヘッダーを使用している場合は保持します。
+	json_deserialize(&tmp, &struct_types[TYPE_ID_TEST1_DATA], msg);
+	printf("---deserialize---\n");
+	printf("test1_data.a = %d\n", tmp.a);
+	printf("test1_data.msg = %s\n", tmp.msg);
+	printf("test1_data.data[0].b[0] = %d\n", tmp.data[0].b[0]);
+	printf("test1_data.data[0].b[1] = %d\n", tmp.data[0].b[1]);
+	printf("test1_data.data[0].msg = %s\n", tmp.data[0].msg);
+	printf("test1_data.data[1].b[0] = %d\n", tmp.data[1].b[0]);
+	printf("test1_data.data[1].b[1] = %d\n", tmp.data[1].b[1]);
+	printf("test1_data.data[1].msg = %s\n", tmp.data[1].msg);
+
+	json_serialize(&tmp, &struct_types[TYPE_ID_TEST1_DATA], json_data, 512);
+	printf("---serialize---\n");
+	printf("%s\n", json_data);
+}

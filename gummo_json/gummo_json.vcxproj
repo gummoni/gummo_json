@@ -85,7 +85,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
@@ -153,19 +153,29 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="gummo_json.h" />
-    <ClInclude Include="pch.h" />
-    <ClInclude Include="refrection.h" />
+    <ClInclude Include="MQTTSNPacket\MQTTSNConnect.h" />
+    <ClInclude Include="MQTTSNPacket\MQTTSNPacket.h" />
+    <ClInclude Include="MQTTSNPacket\MQTTSNPublish.h" />
+    <ClInclude Include="MQTTSNPacket\MQTTSNSearch.h" />
+    <ClInclude Include="MQTTSNPacket\MQTTSNSubscribe.h" />
+    <ClInclude Include="MQTTSNPacket\MQTTSNUnsubscribe.h" />
+    <ClInclude Include="MQTTSNPacket\StackTrace.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="gummo_json.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="pch.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="refrection.cpp" />
+    <ClCompile Include="gummo_json.c" />
+    <ClCompile Include="main.c" />
+    <ClCompile Include="MQTTSNPacket\MQTTSNConnectClient.c" />
+    <ClCompile Include="MQTTSNPacket\MQTTSNConnectServer.c" />
+    <ClCompile Include="MQTTSNPacket\MQTTSNDeserializePublish.c" />
+    <ClCompile Include="MQTTSNPacket\MQTTSNPacket.c" />
+    <ClCompile Include="MQTTSNPacket\MQTTSNSearchClient.c" />
+    <ClCompile Include="MQTTSNPacket\MQTTSNSearchServer.c" />
+    <ClCompile Include="MQTTSNPacket\MQTTSNSerializePublish.c" />
+    <ClCompile Include="MQTTSNPacket\MQTTSNSubscribeClient.c" />
+    <ClCompile Include="MQTTSNPacket\MQTTSNSubscribeServer.c" />
+    <ClCompile Include="MQTTSNPacket\MQTTSNUnsubscribeClient.c" />
+    <ClCompile Include="MQTTSNPacket\MQTTSNUnsubscribeServer.c" />
+    <ClCompile Include="refrection.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="readme.md" />

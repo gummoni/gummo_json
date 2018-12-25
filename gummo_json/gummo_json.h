@@ -17,8 +17,17 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-#pragma once
+#ifndef __GUMMO_JSON_H__
+#define __GUMMO_JSON_H__
 
+//macro
+#define TYPE_GET_INFO(type_id)					(0 > type_id) ? 0 : &struct_types[type_id]
+#define TYPE_INFO(name, var)					{ name, (unsigned int)&var }
+#define TYPE_END()								{ 0, (unsigned int)0 }
+
+#define FIELD_TYPE_SIZE(field)					(field->size / field->length)
+#define FIELD_INFO(obj, field, type, length)	{ #field, type, (unsigned int)&obj.field, sizeof(obj.field), length }
+#define FIELD_END()								{ "\0", TYPE_ID_BYTE, 0, 0, 0 }
 
 //type index
 typedef enum
@@ -38,16 +47,24 @@ typedef enum
 	TYPE_ID_MAX,
 } TYPE_ID;
 
+
 //field information
 #define JSON_KEY_LENGTH		16
 typedef struct
 {
 	char name[JSON_KEY_LENGTH];
 	TYPE_ID type;
-	uint32_t offset;
-	uint8_t size;
-	uint8_t length;
+	unsigned int index;
+	unsigned char size;
+	unsigned char length;
 } struct_field;
+
+//struct type information
+typedef struct
+{
+	const struct_field* fields;
+	unsigned int offset;
+} struct_type;
 
 //JSON parse context
 typedef struct
@@ -60,16 +77,32 @@ typedef struct
 	char* pval;
 } json_parse_context;
 
-//macro
-#define TYPE_GET_FIELDS(type_id)				(0 > type_id) ? NULL : struct_types[type_id]
-#define TYPE_GET_FIELD_POINTER(obj, offset)		&obj[offset]
-#define FIELD_TYPE_SIZE(field)					(field->size / field->length)
-#define FIELD_OFFSET(obj, field)				((uint32_t)&obj.field - (uint32_t)&obj)
-#define FIELD_INFO(obj, name, type, length)		{ #name, type, FIELD_OFFSET(obj, name), sizeof(obj.name), length }
-#define FIELD_END()								{ "\0", TYPE_ID_BYTE, 0, 0, 0 }
-
 //JSON API
-extern char* json_deserialize(void* obj, const struct_field* fields, char* json_str);
-extern int json_serialize(void* obj, const struct_field* fields, char* json_str, int length);
+extern const struct_type struct_types[];
+extern char* json_deserialize(void* obj, const struct_type* fields, char* json_str);
+extern int json_serialize(void* obj, const struct_type* fields, char* json_str, int length);
 
-#include "refrection.h"
+
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#define TEST2_DATA_B_LENGTH			2
+#define TEST2_DATA_MSG_LENGTH		16
+typedef struct
+{
+	unsigned short b[TEST2_DATA_B_LENGTH];
+	char msg[TEST2_DATA_MSG_LENGTH];
+} test2_data;
+
+#define TEST1_DATA_A_LENGTH			1
+#define TEST1_DATA_DATA_LENGTH		2
+#define TEST1_DATA_MSG_LENGTH		16
+typedef struct
+{
+	int a;
+	test2_data data[TEST1_DATA_DATA_LENGTH];
+	char msg[TEST1_DATA_MSG_LENGTH];
+} test1_data;
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+#endif//__GUMMO_JSON_H__

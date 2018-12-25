@@ -17,15 +17,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-#include "pch.h"
+#include "stdio.h"
+#include "stdlib.h"
+#include "string.h"
 #include "gummo_json.h"
-const char test1_data_name[] = "test1_data";
-const char test2_data_name[] = "test2_data";
-
-const char* struct_type_names[] = {
-	test1_data_name,
-	test2_data_name,
-};
 
 static const test1_data tmp1;
 
@@ -42,8 +37,9 @@ const struct_field test2_data_fields[] = {
 	FIELD_END()
 };
 
-const struct_field* struct_types[] =
+const struct_type struct_types[] =
 {
-	test1_data_fields,
-	test2_data_fields,
+	TYPE_INFO(test1_data_fields, tmp1			),
+	TYPE_INFO(test2_data_fields, tmp1.data[0]	),
+	TYPE_END()
 };
