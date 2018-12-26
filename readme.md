@@ -6,52 +6,42 @@ It is easy to serialize and deserialize by using reflection.
 
 int main()
 {
-	char json_data[512];
-	char msg[] = "{\"a\" : 123 , \"data\" :[{ \"b\": [ 64 , 12 ], \"msg\" : \"foo bar\" },{ \"b\": [ 22 , 99 ], \"msg\" : \"ok\" }],  \"msg\" : \"hello world\"}";	
-	test1_data tmp;
+  char json_data[512];
+  char msg[] = "{\"a\" : 123 , \"data\" :[{ \"b\": [ 64 , 12 ], \"msg\" : \"foo bar\" },{ \"b\": [ 22 , 99 ], \"msg\" : \"ok\" }],  \"msg\" : \"hello world\"}";	
+  test1_data obj;
+  struct_type* type = &struct_types[TYPE_ID_TEST1_DATA];
 
-	json_deserialize(&tmp, &struct_types[TYPE_ID_TEST1_DATA], msg);
-	printf("---deserialize---\n");
-	printf("test1_data.a = %d\n", tmp.a);
-	printf("test1_data.msg = %s\n", tmp.msg);
-	printf("test1_data.data[0].b[0] = %d\n", tmp.data[0].b[0]);
-	printf("test1_data.data[0].b[1] = %d\n", tmp.data[0].b[1]);
-	printf("test1_data.data[0].msg = %s\n", tmp.data[0].msg);
-	printf("test1_data.data[1].b[0] = %d\n", tmp.data[1].b[0]);
-	printf("test1_data.data[1].b[1] = %d\n", tmp.data[1].b[1]);
-	printf("test1_data.data[1].msg = %s\n", tmp.data[1].msg);
+  json_deserialize(&obj, type, msg);
 
-	json_serialize(&tmp, &struct_types[TYPE_ID_TEST1_DATA], json_data, 512);
-	printf("---serialize---\n");
-	printf("%s\n", json_data);
+  json_serialize(&obj, type, json_data, 512);
 }
 ```
 
 ## Step1. write refrection.h
  define struct test1_data and test2_data.
 ```
-#define TEST2_DATA_B_LENGTH			2
-#define TEST2_DATA_MSG_LENGTH		16
+#define TEST2_DATA_B_LENGTH    2
+#define TEST2_DATA_MSG_LENGTH  16
 typedef struct
 {
-	unsigned short b[TEST2_DATA_B_LENGTH];
-	char msg[TEST2_DATA_MSG_LENGTH];
+  unsigned short b[TEST2_DATA_B_LENGTH];
+  char msg[TEST2_DATA_MSG_LENGTH];
 } test2_data;
 
-#define TEST1_DATA_A_LENGTH			1
-#define TEST1_DATA_DATA_LENGTH		2
-#define TEST1_DATA_MSG_LENGTH		16
+#define TEST1_DATA_A_LENGTH    1
+#define TEST1_DATA_DATA_LENGTH 2
+#define TEST1_DATA_MSG_LENGTH  16
 typedef struct
 {
-	int a;
-	test2_data data[TEST1_DATA_DATA_LENGTH];
-	char msg[TEST1_DATA_MSG_LENGTH];
+  int a;
+  test2_data data[TEST1_DATA_DATA_LENGTH];
+  char msg[TEST1_DATA_MSG_LENGTH];
 } test1_data;
 
 typedef enum
 {
-	TYPE_ID_TEST1_DATA = 0,
-	TYPE_ID_TEST2_DATA = 1,
+  TYPE_ID_TEST1_DATA = 0,
+  TYPE_ID_TEST2_DATA = 1,
 } TYPE_ID_USR;
 ```
 
@@ -65,23 +55,23 @@ static const test1_data tmp1;
 
 
 const struct_field test1_data_fields[] = {
-	FIELD_INFO(tmp1         , a    , TYPE_ID_INT        , TEST1_DATA_A_LENGTH    ),
-	FIELD_INFO(tmp1         , data , TYPE_ID_TEST2_DATA , TEST1_DATA_DATA_LENGTH ),
-	FIELD_INFO(tmp1         , msg  , TYPE_ID_STRING     , TEST1_DATA_MSG_LENGTH  ),
-	FIELD_END()
+  FIELD_INFO(tmp1         , a    , TYPE_ID_INT        , TEST1_DATA_A_LENGTH    ),
+  FIELD_INFO(tmp1         , data , TYPE_ID_TEST2_DATA , TEST1_DATA_DATA_LENGTH ),
+  FIELD_INFO(tmp1         , msg  , TYPE_ID_STRING     , TEST1_DATA_MSG_LENGTH  ),
+  FIELD_END()
 };
 
 const struct_field test2_data_fields[] = {
-	FIELD_INFO(tmp1.data[0] , b    , TYPE_ID_SHORT      , TEST2_DATA_B_LENGTH    ),
-	FIELD_INFO(tmp1.data[0] , msg  , TYPE_ID_STRING     , TEST2_DATA_MSG_LENGTH  ),
-	FIELD_END()
+  FIELD_INFO(tmp1.data[0] , b    , TYPE_ID_SHORT      , TEST2_DATA_B_LENGTH    ),
+  FIELD_INFO(tmp1.data[0] , msg  , TYPE_ID_STRING     , TEST2_DATA_MSG_LENGTH  ),
+  FIELD_END()
 };
 
 const struct_type struct_types[] =
 {
-	TYPE_INFO(test1_data_fields, tmp1			),
-	TYPE_INFO(test2_data_fields, tmp1.data[0]	),
-	TYPE_END()
+  TYPE_INFO(test1_data_fields, tmp1         ),
+  TYPE_INFO(test2_data_fields, tmp1.data[0] ),
+  TYPE_END()
 };
 ```
 

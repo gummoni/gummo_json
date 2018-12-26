@@ -156,32 +156,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="gummo_json.h" />
-    <ClInclude Include="MQTTSNPacket\MQTTSNConnect.h" />
-    <ClInclude Include="MQTTSNPacket\MQTTSNPacket.h" />
-    <ClInclude Include="MQTTSNPacket\MQTTSNPublish.h" />
-    <ClInclude Include="MQTTSNPacket\MQTTSNSearch.h" />
-    <ClInclude Include="MQTTSNPacket\MQTTSNSubscribe.h" />
-    <ClInclude Include="MQTTSNPacket\MQTTSNUnsubscribe.h" />
-    <ClInclude Include="MQTTSNPacket\StackTrace.h" />
     <ClInclude Include="refrection.h" />
-    <ClInclude Include="transport.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="gummo_json.c" />
     <ClCompile Include="main.c" />
-    <ClCompile Include="MQTTSNPacket\MQTTSNConnectClient.c" />
-    <ClCompile Include="MQTTSNPacket\MQTTSNConnectServer.c" />
-    <ClCompile Include="MQTTSNPacket\MQTTSNDeserializePublish.c" />
-    <ClCompile Include="MQTTSNPacket\MQTTSNPacket.c" />
-    <ClCompile Include="MQTTSNPacket\MQTTSNSearchClient.c" />
-    <ClCompile Include="MQTTSNPacket\MQTTSNSearchServer.c" />
-    <ClCompile Include="MQTTSNPacket\MQTTSNSerializePublish.c" />
-    <ClCompile Include="MQTTSNPacket\MQTTSNSubscribeClient.c" />
-    <ClCompile Include="MQTTSNPacket\MQTTSNSubscribeServer.c" />
-    <ClCompile Include="MQTTSNPacket\MQTTSNUnsubscribeClient.c" />
-    <ClCompile Include="MQTTSNPacket\MQTTSNUnsubscribeServer.c" />
     <ClCompile Include="refrection.c" />
-    <ClCompile Include="transport.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
