@@ -140,7 +140,7 @@ exit:
   * @param packetid the MQTT-SN packet identifier
   * @return serialized length, or error if 0
   */
-int MQTTSNSerialize_ack(unsigned char* buf, int buflen, unsigned short packet_type, unsigned short packetid)
+int MQTTSNSerialize_ack(unsigned char* buf, int buflen, char packet_type, unsigned short packetid)
 {
 	int rc = 0;
 	unsigned char *ptr = buf;

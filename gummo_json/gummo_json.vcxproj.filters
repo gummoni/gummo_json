@@ -42,6 +42,12 @@
     <ClInclude Include="MQTTSNPacket\StackTrace.h">
       <Filter>ソース ファイル\MQTTSNPacket</Filter>
     </ClInclude>
+    <ClInclude Include="transport.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="refrection.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.c">
@@ -86,8 +92,8 @@
     <ClCompile Include="MQTTSNPacket\MQTTSNUnsubscribeServer.c">
       <Filter>ソース ファイル\MQTTSNPacket</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="readme.md" />
+    <ClCompile Include="transport.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

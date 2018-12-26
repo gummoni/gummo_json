@@ -92,10 +92,13 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <DisableSpecificWarnings>
+      </DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -160,6 +163,8 @@
     <ClInclude Include="MQTTSNPacket\MQTTSNSubscribe.h" />
     <ClInclude Include="MQTTSNPacket\MQTTSNUnsubscribe.h" />
     <ClInclude Include="MQTTSNPacket\StackTrace.h" />
+    <ClInclude Include="refrection.h" />
+    <ClInclude Include="transport.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="gummo_json.c" />
@@ -176,9 +181,7 @@
     <ClCompile Include="MQTTSNPacket\MQTTSNUnsubscribeClient.c" />
     <ClCompile Include="MQTTSNPacket\MQTTSNUnsubscribeServer.c" />
     <ClCompile Include="refrection.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="readme.md" />
+    <ClCompile Include="transport.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

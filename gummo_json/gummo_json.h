@@ -20,7 +20,9 @@ THE SOFTWARE.
 #ifndef __GUMMO_JSON_H__
 #define __GUMMO_JSON_H__
 
-//macro
+
+#define JSON_KEY_LENGTH		16
+
 #define TYPE_GET_INFO(type_id)					(0 > type_id) ? 0 : &struct_types[type_id]
 #define TYPE_INFO(name, var)					{ name, (unsigned int)&var }
 #define TYPE_END()								{ 0, (unsigned int)0 }
@@ -29,7 +31,6 @@ THE SOFTWARE.
 #define FIELD_INFO(obj, field, type, length)	{ #field, type, (unsigned int)&obj.field, sizeof(obj.field), length }
 #define FIELD_END()								{ "\0", TYPE_ID_BYTE, 0, 0, 0 }
 
-//type index
 typedef enum
 {
 	TYPE_ID_STRING = -8,
@@ -40,16 +41,9 @@ typedef enum
 	TYPE_ID_SHORT = -3,
 	TYPE_ID_BYTE = -2,
 	TYPE_ID_BOOL = -1,
-	//>>>>>>>>>> user type define <<<<<<<<<<
-	TYPE_ID_TEST1_DATA = 0,
-	TYPE_ID_TEST2_DATA = 1,
-	//======================================
-	TYPE_ID_MAX,
 } TYPE_ID;
 
 
-//field information
-#define JSON_KEY_LENGTH		16
 typedef struct
 {
 	char name[JSON_KEY_LENGTH];
@@ -82,27 +76,6 @@ extern const struct_type struct_types[];
 extern char* json_deserialize(void* obj, const struct_type* fields, char* json_str);
 extern int json_serialize(void* obj, const struct_type* fields, char* json_str, int length);
 
-
-//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-#define TEST2_DATA_B_LENGTH			2
-#define TEST2_DATA_MSG_LENGTH		16
-typedef struct
-{
-	unsigned short b[TEST2_DATA_B_LENGTH];
-	char msg[TEST2_DATA_MSG_LENGTH];
-} test2_data;
-
-#define TEST1_DATA_A_LENGTH			1
-#define TEST1_DATA_DATA_LENGTH		2
-#define TEST1_DATA_MSG_LENGTH		16
-typedef struct
-{
-	int a;
-	test2_data data[TEST1_DATA_DATA_LENGTH];
-	char msg[TEST1_DATA_MSG_LENGTH];
-} test1_data;
-//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-
+#include "refrection.h"
 
 #endif//__GUMMO_JSON_H__

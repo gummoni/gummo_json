@@ -17,27 +17,31 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-#include "gummo_json.h"
+#ifndef __REFRECTION_H__
+#define __REFRECTION_H__
 
-static const test1_data tmp1;
-
-
-const struct_field test1_data_fields[] = {
-	FIELD_INFO(tmp1         , a    , TYPE_ID_INT        , TEST1_DATA_A_LENGTH    ),
-	FIELD_INFO(tmp1         , data , TYPE_ID_TEST2_DATA , TEST1_DATA_DATA_LENGTH ),
-	FIELD_INFO(tmp1         , msg  , TYPE_ID_STRING     , TEST1_DATA_MSG_LENGTH  ),
-	FIELD_END()
-};
-
-const struct_field test2_data_fields[] = {
-	FIELD_INFO(tmp1.data[0] , b    , TYPE_ID_SHORT      , TEST2_DATA_B_LENGTH    ),
-	FIELD_INFO(tmp1.data[0] , msg  , TYPE_ID_STRING     , TEST2_DATA_MSG_LENGTH  ),
-	FIELD_END()
-};
-
-const struct_type struct_types[] =
+#define TEST2_DATA_B_LENGTH			2
+#define TEST2_DATA_MSG_LENGTH		16
+typedef struct
 {
-	TYPE_INFO(test1_data_fields, tmp1			),
-	TYPE_INFO(test2_data_fields, tmp1.data[0]	),
-	TYPE_END()
-};
+	unsigned short b[TEST2_DATA_B_LENGTH];
+	char msg[TEST2_DATA_MSG_LENGTH];
+} test2_data;
+
+#define TEST1_DATA_A_LENGTH			1
+#define TEST1_DATA_DATA_LENGTH		2
+#define TEST1_DATA_MSG_LENGTH		16
+typedef struct
+{
+	int a;
+	test2_data data[TEST1_DATA_DATA_LENGTH];
+	char msg[TEST1_DATA_MSG_LENGTH];
+} test1_data;
+
+typedef enum
+{
+	TYPE_ID_TEST1_DATA = 0,
+	TYPE_ID_TEST2_DATA = 1,
+} TYPE_ID_USR;
+
+#endif//__REFRECTION_H__

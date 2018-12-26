@@ -23,10 +23,13 @@
 #endif
 
 #if defined(WIN32)
-/* default on Windows is 64 - increase to make Linux and Windows the same */
 #define FD_SETSIZE 1024
+#define _CRT_SECURE_NO_WARNINGS
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+#include <stdio.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include <string.h>
 #define MAXHOSTNAMELEN 256
 #define EAGAIN WSAEWOULDBLOCK
 #define EINTR WSAEINTR
@@ -37,6 +40,8 @@
 #define ECONNRESET WSAECONNRESET
 #define ioctl ioctlsocket
 #define socklen_t int
+#define SHUT_WR SD_SEND
+#pragma comment(lib, "ws2_32.lib")
 #else
 #define INVALID_SOCKET SOCKET_ERROR
 #include <sys/socket.h>
@@ -55,10 +60,11 @@
 #endif
 
 #if defined(WIN32)
-#include <Iphlpapi.h>
+#include <iphlpapi.h>
+#include <string.h>
 #else
 #include <sys/ioctl.h>
-#include <net/if.h>
+#include <net/f.h>
 #endif
 
 /**
@@ -92,8 +98,7 @@ int Socket_error(char* aString, int sock)
 	return errno;
 }
 
-
-int lowlevel_sendPacketBuffer(char* host, int port, unsigned char* buf, int buflen)
+int transport_sendPacketBuffer(char* host, int port, unsigned char* buf, int buflen)
 {
 	struct sockaddr_in cliaddr;
 	int rc = 0;
@@ -111,7 +116,7 @@ int lowlevel_sendPacketBuffer(char* host, int port, unsigned char* buf, int bufl
 }
 
 
-int lowlevel_getdata(unsigned char* buf, int count)
+int transport_getdata(unsigned char* buf, int count)
 {
 	int rc = recvfrom(mysock, buf, count, 0, NULL, NULL);
 	//printf("received %d bytes count %d\n", rc, (int)count);
@@ -121,8 +126,35 @@ int lowlevel_getdata(unsigned char* buf, int count)
 /**
 return >=0 for a socket descriptor, <0 for an error code
 */
-int lowlevel_open()
+int transport_open()
 {
+#if defined(WIN32)
+	WORD wVersionRequested;
+	WSADATA wsaData;
+	int err;
+
+	/* Use the MAKEWORD(lowbyte, highbyte) macro declared in Windef.h */
+	wVersionRequested = MAKEWORD(2, 2);
+
+	err = WSAStartup(wVersionRequested, &wsaData);
+	if (err != 0) {
+		/* Tell the user that we could not find a usable */
+		/* Winsock DLL.                                  */
+		printf("WSAStartup failed with error: %d\n", err);
+		return 1;
+	}
+
+	if (LOBYTE(wsaData.wVersion) != 2 || HIBYTE(wsaData.wVersion) != 2) {
+		/* Tell the user that we could not find a usable */
+		/* WinSock DLL.                                  */
+		printf("Could not find a usable version of Winsock.dll\n");
+		WSACleanup();
+		return 1;
+	}
+	else
+		printf("The Winsock 2.2 dll was found okay\n");
+
+#endif
 	mysock = socket(AF_INET, SOCK_DGRAM, 0);
 	if (mysock == INVALID_SOCKET)
 		return Socket_error("socket", mysock);
@@ -130,12 +162,18 @@ int lowlevel_open()
 	return mysock;
 }
 
-int lowlevel_close()
+int transport_close()
 {
-int rc;
+	int rc;
+
+#if defined(WIN32)
+	rc = WSACleanup();
+	rc = closesocket(mysock);
+#else
 
 	rc = shutdown(mysock, SHUT_WR);
 	rc = close(mysock);
 
+#endif
 	return rc;
 }
