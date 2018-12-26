@@ -94,6 +94,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <DisableSpecificWarnings>
       </DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>C:\Users\moni\Documents\Visual Studio 2017\Projects\gummo_json\gummo_json\example;C:\Users\moni\Documents\Visual Studio 2017\Projects\gummo_json\gummo_json;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -155,13 +156,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="example\refrection.h" />
     <ClInclude Include="gummo_json.h" />
-    <ClInclude Include="refrection.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="example\main.c" />
+    <ClCompile Include="example\refrection.c" />
     <ClCompile Include="gummo_json.c" />
-    <ClCompile Include="main.c" />
-    <ClCompile Include="refrection.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -13,24 +13,27 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="ソース ファイル\example">
+      <UniqueIdentifier>{b99cae0b-8515-40c9-8ebb-3498b9836722}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gummo_json.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="refrection.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="example\refrection.h">
+      <Filter>ソース ファイル\example</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.c">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="gummo_json.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="refrection.c">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="example\main.c">
+      <Filter>ソース ファイル\example</Filter>
+    </ClCompile>
+    <ClCompile Include="example\refrection.c">
+      <Filter>ソース ファイル\example</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
